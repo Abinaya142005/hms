@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ prescription.medicine_name }} - HMS{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+    <a href="{% url 'patients:patient-detail' prescription.patient.patient_id %}" class="btn btn-outline btn-sm">
+        <i class="fas fa-arrow-left"></i> Back to Patient
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h2 style="margin: 0;">{{ prescription.medicine_name }}</h2>
+                <p style="color: var(--text-light); margin: 0.5rem 0 0 0;">Prescription ID: #{{ prescription.prescription_id }}</p>
+            </div>
+            <div class="action-buttons">
+                <a href="{% url 'prescriptions:prescription-update' prescription.prescription_id %}" class="btn btn-secondary">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+                <form method="post" action="{% url 'prescriptions:prescription-delete' prescription.prescription_id %}" style="display: inline;" onsubmit="return confirm('Are you sure?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h5 style="color: var(--text-dark); margin-bottom: 1rem; border-bottom: 2px solid var(--primary-color); padding-bottom: 0.5rem;">
+                    <i class="fas fa-user"></i> Patient Information
+                </h5>
+                <div style="margin-bottom: 1rem;">
+                    <label style="color: var(--text-light); font-size: 0.875rem; text-transform: uppercase;">Patient Name</label>
+                    <p>
+                        <a href="{% url 'patients:patient-detail' prescription.patient.patient_id %}">
+                            {{ prescription.patient.full_name }}
+                        </a>
+                    </p>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="color: var(--text-light); font-size: 0.875rem; text-transform: uppercase;">Patient ID</label>
+                    <p>#{{ prescription.patient.patient_id }}</p>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <h5 style="color: var(--text-dark); margin-bottom: 1rem; border-bottom: 2px solid var(--primary-color); padding-bottom: 0.5rem;">
+                    <i class="fas fa-prescription-bottle"></i> Prescription Details
+                </h5>
+                <div style="margin-bottom: 1rem;">
+                    <label style="color: var(--text-light); font-size: 0.875rem; text-transform: uppercase;">Dosage</label>
+                    <p>{{ prescription.dosage }}</p>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="color: var(--text-light); font-size: 0.875rem; text-transform: uppercase;">Frequency</label>
+                    <p><span class="badge badge-info">{{ prescription.get_frequency_display }}</span></p>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="color: var(--text-light); font-size: 0.875rem; text-transform: uppercase;">Duration</label>
+                    <p>{{ prescription.duration }} {{ prescription.get_duration_unit_display }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <hr style="margin: 2rem 0; border-color: var(--border-color);">
+        
+        {% if prescription.instructions %}
+        <div style="margin-bottom: 1.5rem;">
+            <h5 style="color: var(--text-dark); border-bottom: 2px solid var(--primary-color); padding-bottom: 0.5rem;">
+                <i class="fas fa-clipboard-list"></i> Instructions
+            </h5>
+            <p>{{ prescription.instructions }}</p>
+        </div>
+        {% endif %}
+        
+        {% if prescription.side_effects %}
+        <div style="margin-bottom: 1.5rem;">
+            <h5 style="color: var(--text-dark); border-bottom: 2px solid var(--primary-color); padding-bottom: 0.5rem;">
+                <i class="fas fa-exclamation-triangle"></i> Side Effects
+            </h5>
+            <p>{{ prescription.side_effects }}</p>
+        </div>
+        {% endif %}
+        
+        {% if prescription.notes %}
+        <div style="margin-bottom: 1.5rem;">
+            <h5 style="color: var(--text-dark); border-bottom: 2px solid var(--primary-color); padding-bottom: 0.5rem;">
+                <i class="fas fa-sticky-note"></i> Notes
+            </h5>
+            <p>{{ prescription.notes }}</p>
+        </div>
+        {% endif %}
+        
+        <hr style="margin: 2rem 0; border-color: var(--border-color);">
+        
+        <div class="row">
+            <div class="col-md-6">
+                <label style="color: var(--text-light); font-size: 0.875rem; text-transform: uppercase;">Prescribed By</label>
+                <p>{{ prescription.prescribed_by.first_name|default:prescription.prescribed_by.username }}</p>
+            </div>
+            <div class="col-md-6">
+                <label style="color: var(--text-light); font-size: 0.875rem; text-transform: uppercase;">Prescribed Date</label>
+                <p>{{ prescription.prescribed_date|date:"M d, Y" }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

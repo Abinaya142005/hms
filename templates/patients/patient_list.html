@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Patients - HMS{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div>
+        <h1><i class="fas fa-users"></i> Patients</h1>
+        <p style="color: var(--text-light); margin: 0.5rem 0 0 0;">Manage patient records</p>
+    </div>
+    <a href="{% url 'patients:patient-create' %}" class="btn btn-primary">
+        <i class="fas fa-plus-circle"></i> Add New Patient
+    </a>
+</div>
+
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-body">
+        <form method="get" class="search-bar">
+            <input type="text" name="search" placeholder="Search by name, email, or phone..." value="{{ search }}">
+            <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">
+                <i class="fas fa-search"></i> Search
+            </button>
+        </form>
+    </div>
+</div>
+
+{% if patients %}
+<div class="table-container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Patient ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Gender</th>
+                <th>Blood Group</th>
+                <th>Added</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for patient in patients %}
+            <tr>
+                <td><span class="badge badge-primary">#{{ patient.patient_id }}</span></td>
+                <td>
+                    <strong>{{ patient.full_name }}</strong>
+                </td>
+                <td><a href="mailto:{{ patient.email }}">{{ patient.email }}</a></td>
+                <td><a href="tel:{{ patient.phone }}">{{ patient.phone }}</a></td>
+                <td>{{ patient.get_gender_display }}</td>
+                <td><span class="badge badge-success">{{ patient.blood_group }}</span></td>
+                <td>
+                    <small>{{ patient.created_at|date:"M d, Y" }}</small>
+                </td>
+                <td>
+                    <div class="action-buttons">
+                        <a href="{% url 'patients:patient-detail' patient.patient_id %}" class="action-btn action-btn-view" title="View">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="{% url 'patients:patient-update' patient.patient_id %}" class="action-btn action-btn-edit" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form method="post" action="{% url 'patients:patient-delete' patient.patient_id %}" style="display: inline;" onsubmit="return confirm('Are you sure?');">
+                            {% csrf_token %}
+                            <button type="submit" class="action-btn action-btn-delete" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if page_obj.has_other_pages %}
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+        {% if page_obj.has_previous %}
+            <li><a href="?page=1{% if search %}&search={{ search }}{% endif %}" class="page-link"><i class="fas fa-chevron-left"></i></a></li>
+            <li><a href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}" class="page-link">{{ page_obj.previous_page_number }}</a></li>
+        {% endif %}
+
+        <li><span class="page-link current">{{ page_obj.number }}</span></li>
+
+        {% if page_obj.has_next %}
+            <li><a href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}" class="page-link">{{ page_obj.next_page_number }}</a></li>
+            <li><a href="?page={{ page_obj.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}" class="page-link"><i class="fas fa-chevron-right"></i></a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="card">
+    <div class="card-body" style="text-align: center; padding: 3rem;">
+        <div class="empty-state-icon">
+            <i class="fas fa-inbox"></i>
+        </div>
+        <h3>No Patients Found</h3>
+        <p>{% if search %}No patients match your search criteria.{% else %}Start by adding your first patient to the system.{% endif %}</p>
+        <a href="{% url 'patients:patient-create' %}" class="btn btn-primary" style="margin-top: 1rem; max-width: 200px;">
+            <i class="fas fa-plus-circle"></i> Add Patient
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

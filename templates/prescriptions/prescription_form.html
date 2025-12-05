@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if prescription %}Edit Prescription{% else %}Add Prescription{% endif %} - HMS{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+    <a href="{% url 'patients:patient-detail' patient.patient_id %}" class="btn btn-outline btn-sm">
+        <i class="fas fa-arrow-left"></i> Back to Patient
+    </a>
+</div>
+
+<div class="form-card">
+    <h2>
+        <i class="fas fa-prescription-bottle"></i>
+        {% if prescription %}Edit Prescription{% else %}Add Prescription{% endif %}
+    </h2>
+    <p style="color: var(--text-light); margin-bottom: 2rem;">
+        <strong>Patient:</strong> {{ patient.full_name }} (ID: #{{ patient.patient_id }})
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="{{ form.medicine_name.id_for_label }}">Medicine Name *</label>
+            {{ form.medicine_name }}
+            {% if form.medicine_name.errors %}
+                <small class="text-danger">{{ form.medicine_name.errors }}</small>
+            {% endif %}
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="{{ form.dosage.id_for_label }}">Dosage *</label>
+                {{ form.dosage }}
+                {% if form.dosage.errors %}
+                    <small class="text-danger">{{ form.dosage.errors }}</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.frequency.id_for_label }}">Frequency *</label>
+                {{ form.frequency }}
+                {% if form.frequency.errors %}
+                    <small class="text-danger">{{ form.frequency.errors }}</small>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="{{ form.duration.id_for_label }}">Duration *</label>
+                {{ form.duration }}
+                {% if form.duration.errors %}
+                    <small class="text-danger">{{ form.duration.errors }}</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.duration_unit.id_for_label }}">Duration Unit *</label>
+                {{ form.duration_unit }}
+                {% if form.duration_unit.errors %}
+                    <small class="text-danger">{{ form.duration_unit.errors }}</small>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.instructions.id_for_label }}">Instructions</label>
+            {{ form.instructions }}
+            {% if form.instructions.errors %}
+                <small class="text-danger">{{ form.instructions.errors }}</small>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.side_effects.id_for_label }}">Side Effects</label>
+            {{ form.side_effects }}
+            {% if form.side_effects.errors %}
+                <small class="text-danger">{{ form.side_effects.errors }}</small>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.notes.id_for_label }}">Notes</label>
+            {{ form.notes }}
+            {% if form.notes.errors %}
+                <small class="text-danger">{{ form.notes.errors }}</small>
+            {% endif %}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> {% if prescription %}Update Prescription{% else %}Add Prescription{% endif %}
+            </button>
+            <a href="{% url 'patients:patient-detail' patient.patient_id %}" class="btn btn-outline">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
